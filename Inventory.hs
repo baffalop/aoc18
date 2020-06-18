@@ -1,10 +1,20 @@
 module Inventory
   ( input
   , checksum
+  , lettersInCommon
+  , findFabricIds
   ) where
 
 import qualified Data.List as List
 import qualified Data.Map as Map
+import qualified WildTrie as WildTrie
+
+-- FIND FABRIC
+lettersInCommon :: ([a], [a], [a]) -> [a]
+lettersInCommon (x, _, y) = x ++ y
+
+findFabricIds :: (Ord a) => [[a]] -> Maybe ([a], [a], [a])
+findFabricIds = WildTrie.findWildcard . WildTrie.fromList
 
 -- CHECKSUM
 checksum :: (Ord a) => [[a]] -> Int
