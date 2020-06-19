@@ -1,3 +1,5 @@
+{-# LANGUAGE TupleSections #-}
+
 module Inventory
   ( input
   , checksum
@@ -30,10 +32,7 @@ maxCount :: (Ord a) => [a] -> Int
 maxCount = List.maximum . Map.elems . counts
 
 counts :: (Ord a) => [a] -> Map.Map a Int
-counts = foldr (Map.alter countIn) Map.empty
-  where
-    countIn Nothing = Just 1
-    countIn (Just n) = Just (n + 1)
+counts = Map.fromListWith (+) . map (, 1)
 
 -- INPUT
 input :: [String]
