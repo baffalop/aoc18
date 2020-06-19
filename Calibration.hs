@@ -14,12 +14,12 @@ calibrate :: [String] -> Maybe Int
 calibrate = firstDup . scanChanges . List.cycle . map readChange
 
 firstDup :: (Eq a, Ord a) => [a] -> Maybe a
-firstDup = firstDup' Set.empty
+firstDup = firstDup_ Set.empty
   where
-    firstDup' set [] = Nothing
-    firstDup' set (x:xs)
+    firstDup_ set [] = Nothing
+    firstDup_ set (x:xs)
       | Set.member x set = Just x
-      | otherwise = firstDup' (Set.insert x set) xs
+      | otherwise = firstDup_ (Set.insert x set) xs
 
 scanChanges :: [Change] -> [Int]
 scanChanges = scanl (flip ($)) 0
