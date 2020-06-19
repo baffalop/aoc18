@@ -9,7 +9,7 @@ module Inventory
 
 import qualified Data.List as List
 import qualified Data.Map as Map
-import qualified WildTrie as WildTrie
+import qualified WildTrie
 
 -- FIND FABRIC
 lettersInCommon :: ([a], [a], [a]) -> [a]
@@ -20,19 +20,19 @@ findFabricIds = WildTrie.findWildcard . WildTrie.fromList
 
 -- CHECKSUM
 checksum :: (Ord a) => [[a]] -> Int
-checksum list = countCounts 2 list * countCounts 3 list
+checksum list = countFreqs 2 list * countFreqs 3 list
 
-countCounts :: (Ord a) => Int -> [[a]] -> Int
-countCounts n = List.length . List.filter (hasCount n)
+countFreqs :: (Ord a) => Int -> [[a]] -> Int
+countFreqs n = List.length . List.filter (hasFreq n)
 
-hasCount :: (Ord a) => Int -> [a] -> Bool
-hasCount n = elem n . Map.elems . counts
+hasFreq :: (Ord a) => Int -> [a] -> Bool
+hasFreq n = elem n . Map.elems . freqs
 
-maxCount :: (Ord a) => [a] -> Int
-maxCount = List.maximum . Map.elems . counts
+maxFreq :: (Ord a) => [a] -> Int
+maxFreq = List.maximum . Map.elems . freqs
 
-counts :: (Ord a) => [a] -> Map.Map a Int
-counts = Map.fromListWith (+) . map (, 1)
+freqs :: (Ord a) => [a] -> Map.Map a Int
+freqs = Map.fromListWith (+) . map (, 1)
 
 -- INPUT
 input :: [String]
