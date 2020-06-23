@@ -12,7 +12,7 @@ import qualified Data.Map as Map
 import qualified WildTrie
 
 -- FIND FABRIC
-lettersInCommon :: (Wildcard a) -> [a]
+lettersInCommon :: (WildTrie.Wildcard a) -> [a]
 lettersInCommon (x, _, y) = x ++ y
 
 findFabricIds :: (Ord a) => [[a]] -> Maybe ([a], [a], [a])
