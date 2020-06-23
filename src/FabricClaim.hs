@@ -7,7 +7,7 @@ module FabricClaim
 
 data Rect =
   Rect
-    { id :: Int
+    { claimId :: Int
     , left :: Int
     , top :: Int
     , w :: Int
@@ -36,16 +36,16 @@ intersect :: Rect -> Rect -> Maybe [Rect]
 intersect r1 r2
   | eqGeometry r1 r2 = Just [r1 {overlap = True}]
   | not horizontalOverlap || not verticalOverlap = Nothing
-  | horizontalOverlap && not alignedLeft =
+  | not alignedLeft =
     let (leftHalf, rightHalf) = vSplit leftRect $ left rightRect
      in fmap (leftHalf :) $ intersect rightHalf rightRect
-  | verticalOverlap && not alignedTop =
+  | not alignedTop =
     let (topHalf, bottomHalf) = hSplit topRect $ top bottomRect
      in fmap (topHalf :) $ intersect bottomHalf bottomRect
-  | widthsCoincide =
+  | not widthsCoincide =
     let (leftHalf, rightHalf) = vSplit widerRect $ right narrowerRect
      in fmap (rightHalf :) $ intersect leftHalf narrowerRect
-  | heightsCoincide =
+  | not heightsCoincide =
     let (topHalf, bottomHalf) = hSplit tallerRect $ bottom shorterRect
      in fmap (bottomHalf :) $ intersect topHalf shorterRect
   | otherwise = Nothing
@@ -83,4 +83,5 @@ orderBy f r1 r2
   | otherwise = (r2, r1)
 
 eqGeometry :: Rect -> Rect -> Bool
-eqGeometry r1 r2 = r1 {overlap = False} == r2 {overlap = False}
+eqGeometry r1 r2 =
+  r1 {claimId = 0, overlap = False} == r2 {claimId = 0, overlap = False}

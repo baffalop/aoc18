@@ -5,7 +5,7 @@ module Fabric
   ) where
 
 import Data.Either (rights)
-import FabricClaim (Rect(..), intersectAll)
+import FabricClaim (Rect(..), intersect, intersectAll)
 import FabricParser (parseRect)
 
 intersectedArea :: [Rect] -> Int
