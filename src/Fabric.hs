@@ -1,5 +1,8 @@
 module Fabric
-  ( intersect
+  ( Rect
+  , intersect
+  , addIntersect
+  , intersectAll
   ) where
 
 data Rect =
@@ -18,33 +21,43 @@ right rect = left rect + w rect
 bottom :: Rect -> Int
 bottom rect = top rect + h rect
 
-intersect :: Rect -> Rect -> [Rect]
+intersectAll :: [Rect] -> [Rect]
+intersectAll = foldr addIntersect []
+
+addIntersect :: Rect -> [Rect] -> [Rect]
+addIntersect r [] = [r]
+addIntersect r (x:xs) =
+  case intersect r x of
+    Nothing -> x : addIntersect r xs
+    Just intersects -> foldr addIntersect xs intersects
+
+intersect :: Rect -> Rect -> Maybe [Rect]
 intersect r1 r2
-  | eqGeometry r1 r2 = [r1 {overlap = True}]
-  | not leftCornerIntersects && not topCornerIntersects = [r1, r2]
-  | leftCornerIntersects && not leftsCoincide =
+  | eqGeometry r1 r2 = Just [r1 {overlap = True}]
+  | not horizontalOverlap || not verticalOverlap = Nothing
+  | horizontalOverlap && not alignedLeft =
     let (leftHalf, rightHalf) = vSplit leftRect $ left rightRect
-     in leftHalf : intersect rightHalf rightRect
-  | topCornerIntersects && not topsCoincide =
+     in fmap (leftHalf :) $ intersect rightHalf rightRect
+  | verticalOverlap && not alignedTop =
     let (topHalf, bottomHalf) = hSplit topRect $ top bottomRect
-     in topHalf : intersect bottomHalf bottomRect
-  | not widthsCoincide =
+     in fmap (topHalf :) $ intersect bottomHalf bottomRect
+  | widthsCoincide =
     let (leftHalf, rightHalf) = vSplit widerRect $ right narrowerRect
-     in rightHalf : intersect leftHalf narrowerRect
-  | not heightsCoincide =
+     in fmap (rightHalf :) $ intersect leftHalf narrowerRect
+  | heightsCoincide =
     let (topHalf, bottomHalf) = hSplit tallerRect $ bottom shorterRect
-     in bottomHalf : intersect topHalf shorterRect
+     in fmap (bottomHalf :) $ intersect topHalf shorterRect
   where
     (leftRect, rightRect) = orderBy left r1 r2
     (topRect, bottomRect) = orderBy top r1 r2
     (narrowerRect, widerRect) = orderBy w r1 r2
     (shorterRect, tallerRect) = orderBy h r1 r2
-    leftsCoincide = left r1 == left r2
-    topsCoincide = top r1 == top r2
+    horizontalOverlap = left rightRect < right leftRect
+    verticalOverlap = top bottomRect < bottom topRect
+    alignedLeft = left r1 == left r2
+    alignedTop = top r1 == top r2
     widthsCoincide = w r1 == w r2
     heightsCoincide = h r1 == h r2
-    leftCornerIntersects = left rightRect < right leftRect
-    topCornerIntersects = top bottomRect < bottom topRect
 
 vSplit :: Rect -> Int -> (Rect, Rect)
 vSplit r x = (leftHalf, rightHalf)
