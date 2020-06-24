@@ -81,7 +81,7 @@ hSplit r y = (topHalf, bottomHalf)
     topHeight = y - top r
     bottomHeight = top r + h r - y
 
-orderBy :: (Rect -> Int) -> Rect -> Rect -> (Rect, Rect)
+orderBy :: (Ord b) => (a -> b) -> a -> a -> (a, a)
 orderBy f r1 r2
   | f r1 < f r2 = (r1, r2)
   | otherwise = (r2, r1)
