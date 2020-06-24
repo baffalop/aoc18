@@ -6,7 +6,7 @@ module Fabric
   , intersectedArea
   ) where
 
-import Data.Either (rights)
+import qualified Data.Either as Either
 import qualified Data.Map as M
 import qualified Data.Set as S
 import FabricClaim (Rect(..), intersect, intersectAll)
@@ -24,13 +24,13 @@ findUnintersected =
     mapPair fa fb (a1, b1) (a2, b2) = (fa a1 a2, fb b1 b2)
 
 intersectedArea :: [Rect] -> Int
-intersectedArea = sum . fmap area . filter overlap . intersectAll
+intersectedArea = sum . map area . filter overlap . intersectAll
 
 area :: Rect -> Int
 area (Rect {w = width, h = height}) = width * height
 
 rects :: [String] -> [Rect]
-rects = rights . fmap parseRect
+rects = Either.rights . map parseRect
 
 input =
   [ "#1 @ 265,241: 16x26"
