@@ -2,6 +2,8 @@ module FabricParser
   ( parseRect
   ) where
 
+import qualified Data.Set as Set
+
 import qualified FabricClaim as F
 import Text.Parsec (many1, parse)
 import Text.Parsec.Char (char, digit, string)
@@ -13,10 +15,11 @@ int = do
   n <- many1 digit
   return $ read n
 
-claimId :: Parser Int
+claimId :: Parser (Set.Set Int)
 claimId = do
   char '#'
-  int
+  i <- int
+  return $ Set.singleton i
 
 coord :: Parser (Int, Int)
 coord = do

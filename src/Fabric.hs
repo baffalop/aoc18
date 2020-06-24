@@ -1,3 +1,5 @@
+{-# LANGUAGE TupleSections #-}
+
 module Fabric
   ( input
   , rects
@@ -5,8 +7,21 @@ module Fabric
   ) where
 
 import Data.Either (rights)
+import qualified Data.Map as M
+import qualified Data.Set as S
 import FabricClaim (Rect(..), intersect, intersectAll)
 import FabricParser (parseRect)
+
+findUnintersected :: [Rect] -> [Int]
+findUnintersected =
+  M.keys .
+    -- filter for claimIds seen only once that haven't been merged in overlaps
+  M.filter (\(n, ov) -> not ov && n == 1) .
+    -- create Map from claimId to (count, overlap) tuple values
+  M.fromListWith (mapPair (+) (||)) . concatMap prepareRectForMap . intersectAll
+  where
+    prepareRectForMap rect = map (, (1, overlap rect)) $ S.toList $ claimId rect
+    mapPair fa fb (a1, b1) (a2, b2) = (fa a1 a2, fb b1 b2)
 
 intersectedArea :: [Rect] -> Int
 intersectedArea = sum . fmap area . filter overlap . intersectAll

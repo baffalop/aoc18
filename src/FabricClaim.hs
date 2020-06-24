@@ -5,9 +5,11 @@ module FabricClaim
   , intersectAll
   ) where
 
+import qualified Data.Set as S
+
 data Rect =
   Rect
-    { claimId :: Int
+    { claimId :: S.Set Int
     , left :: Int
     , top :: Int
     , w :: Int
@@ -34,7 +36,9 @@ addIntersect r (x:xs) =
 
 intersect :: Rect -> Rect -> Maybe [Rect]
 intersect r1 r2
-  | eqGeometry r1 r2 = Just [r1 {overlap = True}]
+  | eqGeometry r1 r2 =
+    let mergedIds = S.union (claimId r1) (claimId r2)
+     in Just [r1 {claimId = mergedIds, overlap = True}]
   | not horizontalOverlap || not verticalOverlap = Nothing
   | not alignedLeft =
     let (leftHalf, rightHalf) = vSplit leftRect $ left rightRect
@@ -84,4 +88,5 @@ orderBy f r1 r2
 
 eqGeometry :: Rect -> Rect -> Bool
 eqGeometry r1 r2 =
-  r1 {claimId = 0, overlap = False} == r2 {claimId = 0, overlap = False}
+  r1 {claimId = S.empty, overlap = False} ==
+  r2 {claimId = S.empty, overlap = False}
