@@ -16,7 +16,7 @@ findUnintersected :: [Rect] -> [Int]
 findUnintersected =
   M.keys .
     -- filter for claimIds seen only once that haven't been merged in overlaps
-  M.filter (\(n, ov) -> not ov && n == 1) .
+  M.filter (\(count, overlapped) -> not overlapped && count == 1) .
     -- create Map from claimId to (count, overlap) tuple values
   M.fromListWith (mapPair (+) (||)) . concatMap prepareRectForMap . intersectAll
   where
