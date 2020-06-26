@@ -12,9 +12,9 @@ data Options =
   deriving (Show)
 
 data DayPart
-  = A
-  | B
-  | Both
+  = PartA
+  | PartB
+  | BothParts
   deriving (Show, Read)
 
 cli =
@@ -23,10 +23,9 @@ cli =
         (option auto $
          short 'd' <>
          long "day" <> metavar "N" <> help "Which day's solution to run") <*>
-        (option auto $
-         short 'p' <>
-         long "part" <>
-         value Both <> help "Which part of the day's solution to run") <*>
+        (buildDayPart <$>
+         (switch $ short 'a' <> help "Run only part A of the day's solution") <*>
+         (switch $ short 'b' <> help "Run only part B of the day's solution")) <*>
         (optional $
          strOption $
          long "input" <>
@@ -39,3 +38,8 @@ cli =
 
 main :: IO ()
 main = print =<< execParser cli
+
+buildDayPart :: Bool -> Bool -> DayPart
+buildDayPart True False = PartA
+buildDayPart False True = PartB
+buildDayPart _ _ = BothParts
