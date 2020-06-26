@@ -2,6 +2,7 @@ module Main where
 
 import Data.Semigroup ((<>))
 import Options.Applicative
+import Text.Read (readMaybe)
 
 data Options =
   Options
@@ -20,7 +21,7 @@ data DayPart
 cli =
   let opts =
         Options <$>
-        (option auto $
+        (option (dayNumber 25) $
          short 'd' <>
          long "day" <> metavar "N" <> help "Which day's solution to run") <*>
         (buildDayPart <$>
@@ -43,3 +44,17 @@ buildDayPart :: Bool -> Bool -> DayPart
 buildDayPart True False = PartA
 buildDayPart False True = PartB
 buildDayPart _ _ = BothParts
+
+dayNumber :: Int -> ReadM Int
+dayNumber bound =
+  eitherReader $ \s ->
+    case readMaybe s of
+      Just n ->
+        if n < 1 || n > bound
+          then Left message
+          else Right n
+      Nothing -> Left message
+  where
+    message =
+      "There are " <>
+      show bound <> " days of Christmas. Please specify one of them."
