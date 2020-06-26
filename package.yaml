@@ -16,6 +16,7 @@ dependencies:
 - containers
 - parsec
 - optparse-applicative
+- extra
 
 executables:
   aoc:

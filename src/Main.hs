@@ -1,5 +1,7 @@
 module Main where
 
+import Data.Either.Extra (maybeToEither)
+import Data.Function ((&))
 import Data.Semigroup ((<>))
 import Options.Applicative
 import Text.Read (readMaybe)
@@ -18,6 +20,7 @@ data DayPart
   | BothParts
   deriving (Show, Read)
 
+cli :: ParserInfo Options
 cli =
   let opts =
         Options <$>
@@ -41,11 +44,9 @@ buildDayPart _ _ = BothParts
 dayNumber :: Int -> ReadM Int
 dayNumber bound =
   eitherReader $ \s ->
-    case readMaybe s of
-      Just n ->
-        if n < 1 || n > bound
-          then Left message
-          else Right n
-      Nothing -> Left message
+    readMaybe s & maybeToEither message >>= \n ->
+      if n < 1 || n > bound
+        then Left message
+        else Right n
   where
     message = "There are " <> show bound <> " days of Christmas. Please specify one of them."
