@@ -21,21 +21,14 @@ data DayPart
 cli =
   let opts =
         Options <$>
-        (option (dayNumber 25) $
-         short 'd' <>
-         long "day" <> metavar "N" <> help "Which day's solution to run") <*>
-        (buildDayPart <$>
-         (switch $ short 'a' <> help "Run only part A of the day's solution") <*>
+        (option (dayNumber 25) $ short 'd' <> long "day" <> metavar "N" <> help "Which day's solution to run") <*>
+        (buildDayPart <$> (switch $ short 'a' <> help "Run only part A of the day's solution") <*>
          (switch $ short 'b' <> help "Run only part B of the day's solution")) <*>
         (optional $
-         strOption $
-         long "input" <>
-         short 'i' <>
-         metavar "FILE" <> help "Override file to use as puzzle's input")
+         strOption $ long "input" <> short 'i' <> metavar "FILE" <> help "Override file to use as puzzle's input")
    in info (opts <**> helper) $
       fullDesc <>
-      header "Solutions to Advent of Code 2018" <>
-      progDesc "Run solution(s) for the AoC puzzle of the given day"
+      header "Solutions to Advent of Code 2018" <> progDesc "Run solution(s) for the AoC puzzle of the given day"
 
 main :: IO ()
 main = print =<< execParser cli
@@ -55,6 +48,4 @@ dayNumber bound =
           else Right n
       Nothing -> Left message
   where
-    message =
-      "There are " <>
-      show bound <> " days of Christmas. Please specify one of them."
+    message = "There are " <> show bound <> " days of Christmas. Please specify one of them."

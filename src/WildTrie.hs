@@ -69,8 +69,6 @@ findWildcard :: Trie a -> Maybe (Wildcard a)
 findWildcard = findWildcard_ []
   where
     findWildcard_ _ End = Nothing
-    findWildcard_ init (Wild tail options) =
-      Just (init, Set.toList options, tail)
+    findWildcard_ init (Wild tail options) = Just (init, Set.toList options, tail)
     findWildcard_ init (Node branches) =
-      listToMaybe $
-      mapMaybe (\(x, t) -> findWildcard_ (init ++ [x]) t) $ Map.assocs branches
+      listToMaybe $ mapMaybe (\(x, t) -> findWildcard_ (init ++ [x]) t) $ Map.assocs branches
